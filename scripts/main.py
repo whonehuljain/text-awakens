@@ -32,6 +32,43 @@ def extract_article(url):
         print(f"Error extracting article from {url}: {str(e)}")
         return None
     
+def preprocess_text(text):
+
+    text = re.sub(r'([a-z])([A-Z])', r'\1 \2', text)
+    
+
+    text = re.sub(r'(\d+)([A-Za-z])', r'\1 \2', text)
+    text = re.sub(r'([A-Za-z])(\d+)', r'\1 \2', text)
+
+    text = re.sub(r'([a-z])([A-Z])', r'\1 \2', text)  # camelCase
+    text = re.sub(r'([A-Z])([A-Z][a-z])', r'\1 \2', text)  # PascalCase
+
+    text = re.sub(r'([A-Z]+)([A-Z][a-z])', r'\1 \2', text)
+
+    text = re.sub(r'(\d+)([A-Za-z])', r'\1 \2', text)
+    text = re.sub(r'([A-Za-z])(\d+)', r'\1 \2', text)
+
+
+    
+    return text
+
+
+def get_tokenized_words(text):
+    text = preprocess_text(text)
+    words = word_tokenize(text)
+    return words
+
+
+def remove_stopwords(words):
+
+    stopwords_set = set()
+    for filename in os.listdir("stopwords"):
+        filepath = os.path.join("stopwords", filename)
+        with open(filepath, "r", encoding="utf-8", errors="replace") as f:
+            stopwords_set.update(word.lower() for word in f.read().splitlines())
+    
+    cleaned_words = [word.lower() for word in words if word.lower() not in stopwords_set]
+    return cleaned_words
 
 
 if __name__ == "__main__":
