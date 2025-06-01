@@ -71,5 +71,56 @@ def remove_stopwords(words):
     return cleaned_words
 
 
+def sentiment_analysis(tokenized_text):
+
+    with open("master_dict/positive-words.txt", "r") as f:
+        positive_words = set(f.read().splitlines())
+    with open("master_dict/negative-words.txt", "r", encoding="utf-8", errors="replace") as f:
+        negative_words = set(f.read().splitlines())
+    
+    positive_score = 0
+    negative_score = 0
+
+    for word in tokenized_text:
+        if word.lower() in positive_words:
+            positive_score += 1
+        elif word.lower() in negative_words:
+            negative_score += 1
+
+
+    polarity_score = (positive_score - negative_score)/(positive_score + negative_score + 0.000001)
+
+    subjectivity_score = (positive_score + negative_score)/(len(tokenized_text) + 0.000001)
+
+    return positive_score, negative_score, polarity_score, subjectivity_score
+
+
+def count_syllables(word):
+    word = word.lower()
+    count = 0
+    vowels = 'aeiouy'
+    
+
+    if word.endswith('es') or word.endswith('ed'):
+
+        word = word[:-2]
+
+    prev_char_is_vowel = False
+    for char in word:
+
+        is_vowel = char in vowels
+        if is_vowel and not prev_char_is_vowel:
+            count += 1
+        prev_char_is_vowel = is_vowel
+        
+    if count == 0:
+        count = 1
+    return count
+
+def complex_word_count(words):
+    return sum(1 for word in words if count_syllables(word) > 2)
+
+
+
 if __name__ == "__main__":
     extract_article("https://insights.blackcoffer.com/ai-and-ml-based-youtube-analytics-and-content-creation-tool-for-optimizing-subscriber-engagement-and-content-strategy/")
