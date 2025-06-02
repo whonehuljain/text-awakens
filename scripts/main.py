@@ -120,6 +120,36 @@ def count_syllables(word):
 def complex_word_count(words):
     return sum(1 for word in words if count_syllables(word) > 2)
 
+def readability_analysis(article, total_words):
+
+    sentences = sent_tokenize(article)
+
+    
+    avg_sent_length = len(total_words)/len(sentences)
+
+    num_of_complex_words = complex_word_count(total_words)
+
+    percentage_of_complex_words = (num_of_complex_words/len(total_words))*100
+
+    fog_index = 0.4 * (avg_sent_length + percentage_of_complex_words)
+
+    return avg_sent_length, percentage_of_complex_words, fog_index
+
+
+def cleaned_word_count(words):
+
+    stop_words = set(stopwords.words('english'))
+
+    cleaned_words = [word.lower() for word in words if word.isalnum() and word.lower() not in stop_words]
+
+    return len(cleaned_words)
+
+
+def count_personal_pronouns(words):
+
+    pronouns_set = {"i", "we", "my", "ours", "us"}
+    
+    return sum(1 for word in words if word.lower() in pronouns_set and word != "US")
 
 
 if __name__ == "__main__":
