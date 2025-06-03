@@ -151,6 +151,49 @@ def count_personal_pronouns(words):
     
     return sum(1 for word in words if word.lower() in pronouns_set and word != "US")
 
+def analyze_article(article):
+
+    try:
+
+        words = get_tokenized_words(article)
+
+        cleaned_words = remove_stopwords(words)
+
+        p_score, n_score, polarity, subjectivity = sentiment_analysis(cleaned_words)
+
+        avg_sentence_length, percent_complex_words, fog_index = readability_analysis(article, words)
+
+        complexWords_count = complex_word_count(words)
+
+        cleanedWord_count = cleaned_word_count(words)
+
+        total_syllables = sum(count_syllables(word) for word in words)
+        syllable_per_word = total_syllables / len(words) if words else 0
+
+        personal_pronouns = count_personal_pronouns(words)
+
+        avg_word_length = sum(len(word) for word in words) / len(words) if words else 0
+
+        return {
+            'POSITIVE SCORE': p_score,
+            'NEGATIVE SCORE': n_score,
+            'POLARITY SCORE': polarity,
+            'SUBJECTIVITY SCORE': subjectivity,
+            'AVG SENTENCE LENGTH': avg_sentence_length,
+            'PERCENTAGE OF COMPLEX WORDS': percent_complex_words,
+            'FOG INDEX': fog_index,
+            'AVG NUMBER OF WORDS PER SENTENCE': avg_sentence_length,
+            'COMPLEX WORD COUNT': complexWords_count,
+            'WORD COUNT': cleanedWord_count,
+            'SYLLABLE PER WORD': syllable_per_word,
+            'PERSONAL PRONOUNS': personal_pronouns,
+            'AVG WORD LENGTH': avg_word_length
+        }
+
+    except Exception as e:
+        print(f"Error analyzing article: {e}")
+        return None
+
 
 if __name__ == "__main__":
     extract_article("https://insights.blackcoffer.com/ai-and-ml-based-youtube-analytics-and-content-creation-tool-for-optimizing-subscriber-engagement-and-content-strategy/")
