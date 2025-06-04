@@ -195,5 +195,45 @@ def analyze_article(article):
         return None
 
 
+def main():
+    input_df = pd.read_excel("data/Input.xlsx")
+    results = []
+
+    for _, row in input_df.iterrows():
+        url_id = row['URL_ID']
+        url = row['URL']
+
+        print(f"processing {url_id}...")
+
+        article = extract_article(url)
+        
+        os.makedirs("output/article_text", exist_ok=True)
+
+        if article:
+            file_path = os.path.join("output/article_text", f"{url_id}.txt")
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(article)
+
+
+
+        analysis_result = analyze_article(article) if article else None
+        if analysis_result:
+            analysis_result['URL_ID'] = url_id
+            analysis_result['URL'] = url
+            results.append(analysis_result)
+
+
+    output_df = pd.DataFrame(results)
+
+    output_columns = ['URL_ID', 'URL', 'POSITIVE SCORE', 'NEGATIVE SCORE', 'POLARITY SCORE',
+                     'SUBJECTIVITY SCORE', 'AVG SENTENCE LENGTH', 'PERCENTAGE OF COMPLEX WORDS',
+                     'FOG INDEX', 'AVG NUMBER OF WORDS PER SENTENCE', 'COMPLEX WORD COUNT',
+                     'WORD COUNT', 'SYLLABLE PER WORD', 'PERSONAL PRONOUNS', 'AVG WORD LENGTH']
+    
+    output_df = output_df[output_columns]
+    
+    output_df.to_excel('output/Output.xlsx', index=False)
+
+
 if __name__ == "__main__":
-    extract_article("https://insights.blackcoffer.com/ai-and-ml-based-youtube-analytics-and-content-creation-tool-for-optimizing-subscriber-engagement-and-content-strategy/")
+    main()
